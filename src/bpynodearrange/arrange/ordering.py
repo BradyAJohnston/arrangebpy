@@ -434,7 +434,17 @@ def minimized_cross_count(
 _ITERATIONS = 15
 
 
-def minimize_crossings(G: nx.MultiDiGraph[GNode], T: _MixedGraph) -> None:
+def minimize_crossings(
+    G: nx.MultiDiGraph[GNode], T: _MixedGraph, sweeps: int = 24
+) -> None:
+    """
+    Minimize edge crossings using median heuristic.
+
+    Args:
+        G: The multi-digraph
+        T: The cluster tree
+        sweeps: Number of forward/backward sweeps to perform
+    """
     columns = G.graph["columns"]
     trees = get_col_nesting_trees(columns, T)
     G_ = G.copy()
@@ -453,7 +463,7 @@ def minimize_crossings(G: nx.MultiDiGraph[GNode], T: _MixedGraph) -> None:
     random.seed(0)
     best_cross_count = inf
     best_columns = [c.copy() for c in columns]
-    for _ in range(_ITERATIONS):
+    for _ in range(sweeps):
         cross_count = minimized_cross_count(columns, forward_items, backward_items, T)
         if cross_count < best_cross_count:
             best_cross_count = cross_count

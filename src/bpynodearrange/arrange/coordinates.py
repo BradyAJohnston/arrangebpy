@@ -18,7 +18,7 @@ from bpy.types import Node, NodeTree
 from mathutils import Vector
 
 from ..utils import abs_loc, frame_padding, group_by
-from .graph import FROM_SOCKET, TO_SOCKET, Cluster, GNode, is_real
+from .graph import FROM_SOCKET, TO_SOCKET, Cluster, GNode, is_real, node_name
 
 
 def add_columns(graph: nx.DiGraph[GNode]) -> None:
@@ -30,11 +30,15 @@ def add_columns(graph: nx.DiGraph[GNode]) -> None:
         for component in group_by(graph, key=lambda vertex: vertex.rank, sort=True)
     ]
     graph.graph["columns"] = columns
+
+    # Helper to check if a node is isolated (for more stable sorting)
+    def y_loc(v):
+        return abs_loc(v.node).y if is_real(v) and nx.is_isolate(graph, v) else 0
+
     for column in columns:
-        column.sort(
-            key=lambda vertex: abs_loc(vertex.node).y if is_real(vertex) else 0,
-            reverse=True,
-        )
+        # Sort by name first for stability, then by y-position
+        column.sort(key=node_name)
+        column.sort(key=y_loc, reverse=True)
         for vertex in column:
             vertex.col = column
 
@@ -78,33 +82,43 @@ def frame_padding_of_col(
 
 
 def assign_x_coords(
-    graph: nx.DiGraph[GNode], tree: nx.DiGraph[GNode | Cluster], x_spacing: float = 50.0
+    graph: nx.DiGraph[GNode],
+    tree: nx.DiGraph[GNode | Cluster],
+    horizontal_spacing: float,
 ) -> None:
     """
     Assign horizontal coordinates to all nodes based on their columns.
+
+    Args:
+        graph: The directed graph with nodes to layout
+        tree: The cluster tree for frame padding calculations
+        horizontal_spacing: Horizontal spacing between columns
     """
     columns: list[list[GNode]] = graph.graph["columns"]
-    current_x = 0
+    current_x = 0.0
+
     for column_index, column in enumerate(columns):
-        max_width = max([vertex.width for vertex in column])
+        max_width = max(vertex.width for vertex in column)
 
         for vertex in column:
+            # Reroutes are centered, other nodes are centered within the column width
             vertex.x = (
                 current_x
                 if vertex.is_reroute
                 else current_x - (vertex.width - max_width) / 2
             )
 
-        # Adaptive spacing based on edge characteristics
-        delta_spacing = sum(
-            [
-                1
-                for *_, edge_data in graph.out_edges(column, data=True)
-                if abs(edge_data[TO_SOCKET].y - edge_data[FROM_SOCKET].y)
-                >= x_spacing * 3
-            ]
+        # Adaptive spacing: more space when edges have large vertical deltas
+        # https://doi.org/10.7155/jgaa.00220 (p. 139)
+        large_delta_edges = sum(
+            1
+            for *_, edge_data in graph.out_edges(column, data=True)
+            if abs(edge_data[TO_SOCKET].y - edge_data[FROM_SOCKET].y)
+            >= horizontal_spacing * 3
         )
-        spacing = (1 + min(delta_spacing / 4, 2)) * x_spacing
+        spacing_multiplier = 1 + min(large_delta_edges / 4, 2)
+        spacing = spacing_multiplier * horizontal_spacing
+
         current_x += (
             max_width + spacing + frame_padding_of_col(columns, column_index, tree)
         )

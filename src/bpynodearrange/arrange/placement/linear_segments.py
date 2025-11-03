@@ -353,8 +353,26 @@ def balance_placement(
 
 
 def linear_segments_assign_y_coords(
-    CG: ClusterGraph, vertical_spacing: float = 50.0
+    CG: ClusterGraph,
+    *,
+    vertical_spacing: float = 25.0,
+    direction: str = "BALANCED",
+    socket_alignment: str = "MODERATE",
+    iterations: int = 1,
 ) -> None:
+    """
+    Assign y-coordinates using linear segments for complex frame hierarchies.
+
+    Args:
+        CG: The cluster graph
+        vertical_spacing: Vertical spacing between nodes
+        direction: Layout direction (currently uses BALANCED)
+        socket_alignment: Socket alignment mode (currently simplified)
+        iterations: Iteration count (reserved for future use)
+
+    Note: This is a simplified version. Full socket alignment and direction
+    support would require more complex implementation.
+    """
     linear_segments = get_linear_segments(CG)
     sort_linear_segments(linear_segments, CG.G.graph["columns"])
 

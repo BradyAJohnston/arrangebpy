@@ -5,7 +5,7 @@ import bpy
 from mathutils import Vector
 
 from bpynodearrange.arrange.sugiyama import sugiyama_layout, precompute_links
-from bpynodearrange import config
+from bpynodearrange import config, LayoutSettings
 
 
 class TestSugiyamaLayout:
@@ -122,7 +122,8 @@ class TestSugiyamaLayout:
             nodes.append(node)
 
         # Test with larger vertical spacing
-        sugiyama_layout(self.ntree, vertical_spacing=100.0)
+        settings = LayoutSettings(vertical_spacing=100.0)
+        sugiyama_layout(self.ntree, settings)
 
         # Check that nodes are spaced appropriately
         y_positions = [node.location[1] for node in nodes]

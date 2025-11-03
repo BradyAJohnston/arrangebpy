@@ -6,7 +6,8 @@ from functools import cache
 from operator import itemgetter
 from typing import TypeVar
 
-from bpy.types import Node
+import bpy
+from bpy.types import Node, NodeTree
 from mathutils import Vector
 
 
@@ -41,7 +42,15 @@ REROUTE_DIM = Vector((8, 8))
 
 
 def dimensions(node: Node) -> Vector:
+    """Get node dimensions, accounting for reroutes and optionally UI scale."""
     if node.bl_idname != "NodeReroute":
+        try:
+            if bpy.context and hasattr(bpy.context, "preferences"):
+                ui_scale = bpy.context.preferences.system.ui_scale
+                if ui_scale > 0:
+                    return node.dimensions / ui_scale
+        except (AttributeError, RuntimeError, ZeroDivisionError):
+            pass
         return node.dimensions
     else:
         return REROUTE_DIM
@@ -68,5 +77,30 @@ def get_bottom(node: Node, y_loc: float | None = None) -> float:
 
 @cache
 def frame_padding() -> float:
+    """Get frame padding, with fallback for headless mode."""
+    try:
+        if bpy.context and hasattr(bpy.context, "preferences"):
+            prefs = bpy.context.preferences.system
+            if prefs.ui_scale > 0:
+                widget_unit = int(18 * prefs.ui_scale) + (2 * prefs.pixel_size)
+                return 1.5 * widget_unit / prefs.ui_scale
+    except (AttributeError, RuntimeError, ZeroDivisionError):
+        pass
     # Use fixed padding for headless usage
     return 27.0  # 1.5 * 18 (default widget unit)
+
+
+def get_ntree() -> NodeTree | None:
+    """
+    Get the currently active node tree from context.
+
+    Returns None if no context is available (e.g., in headless mode).
+    This function is provided for compatibility with the original add-on,
+    but passing the node tree as a parameter is preferred.
+    """
+    try:
+        if bpy.context and hasattr(bpy.context, "space_data"):
+            return bpy.context.space_data.edit_tree  # type: ignore
+    except (AttributeError, RuntimeError):
+        pass
+    return None
