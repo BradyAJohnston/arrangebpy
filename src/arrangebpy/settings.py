@@ -86,6 +86,13 @@ class LayoutSettings:
     Only used when stack_collapsed is True.
     """
 
+    align_top_layer: bool = False
+    """
+    If True, align the first and last rank (typically input/output nodes)
+    at Y=0, with all intermediate ranks pushed below.
+    Creates a clean "flat top" layout where sources and sinks are aligned.
+    """
+
     def __post_init__(self):
         """Validate settings after initialization."""
         if self.iterations < 1:
@@ -157,6 +164,9 @@ class OrthogonalSettings:
 
     stack_margin_y_factor: float = 0.5
     """Vertical spacing factor for stacked nodes"""
+
+    align_top_layer: bool = False
+    """If True, align first and last rank at Y=0 (same as LayoutSettings)"""
 
     # Orthogonal-specific settings
     min_segment_length: float = 20.0

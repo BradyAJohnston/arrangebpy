@@ -5,6 +5,14 @@ import bpy
 def test_simple_line():
     """Test that a simple linear chain can be laid out perfectly flat."""
     tree = bpy.data.node_groups.new("Geometry Node", type="GeometryNodeTree")
+    tree.interface.new_socket(
+        "Geometry", in_out="INPUT", socket_type="NodeSocketGeometry"
+    )
+    tree.interface.new_socket(
+        "Geometry", in_out="OUTPUT", socket_type="NodeSocketGeometry"
+    )
+    mod = bpy.data.objects["Cube"].modifiers.new("GEOMETRY", type="NODES")
+    mod.node_group = tree
 
     nodes = [
         "NodeGroupInput",
@@ -23,10 +31,11 @@ def test_simple_line():
 
     # Use topological layout with flatten mode for perfectly horizontal layout
     ar.layout(
-        tree,
-        algorithm="topological",
-        settings=ar.TopologicalSettings(flatten=True, center_nodes=False),
+        ntree=tree,
+        algorithm="sugiyama",
+        settings=ar.LayoutSettings(align_top_layer=True),
     )
+    bpy.ops.wm.save_mainfile(filepath="/Users/brady/Desktop/simplearrange.blend")
 
     locations = [n.location for n in tree.nodes]
     print(f"{locations=}")

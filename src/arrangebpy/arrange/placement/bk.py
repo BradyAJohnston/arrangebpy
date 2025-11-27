@@ -421,6 +421,61 @@ _DIRECTION_TO_IDX: dict[Direction, int] = {
 }
 
 
+def _apply_top_layer_alignment(
+    G: nx.MultiDiGraph[GNode], columns: list[list[GNode]]
+) -> None:
+    """
+    Align the first and last rank at Y=0, push all other ranks below.
+
+    This creates a "flat top" layout where input and output nodes are
+    aligned horizontally at the top, with intermediate nodes below.
+
+    Args:
+        G: The graph with assigned Y coordinates
+        columns: The columns (ranks) of nodes
+    """
+    if len(columns) < 2:
+        return  # Need at least 2 columns
+
+    # Filter out dummy/reroute nodes - only consider real nodes
+    from ..graph import GType
+
+    # Find source and sink nodes (those with no predecessors/successors)
+    sources = []
+    sinks = []
+
+    for node in G:
+        if node.type != GType.NODE:
+            continue
+        # Count real predecessors/successors (not dummies/reroutes)
+        real_preds = [p for p in G.predecessors(node) if p.type == GType.NODE]
+        real_succs = [s for s in G.successors(node) if s.type == GType.NODE]
+
+        if not real_preds:
+            sources.append(node)
+        if not real_succs:
+            sinks.append(node)
+
+    # Get all nodes that should be at the top (sources and sinks)
+    top_nodes = set(sources) | set(sinks)
+
+    if not top_nodes:
+        return
+
+    # Find the maximum Y among all top nodes - this is our target for Y=0
+    max_top_y = max(node.y for node in top_nodes)
+
+    # Align all top nodes to Y=0
+    for node in top_nodes:
+        node.y = 0
+
+    # Push all other nodes down by max_top_y (so they're below 0)
+    for node in G:
+        if node.type == GType.NODE and node not in top_nodes:
+            # Move this node down relative to the top
+            node.y -= max_top_y
+
+
 def bk_assign_y_coords(
     G: nx.MultiDiGraph[GNode],
     T: nx.DiGraph[GNode | Cluster] | None = None,
@@ -429,6 +484,7 @@ def bk_assign_y_coords(
     direction: Direction = "BALANCED",
     socket_alignment: SocketAlignment = "MODERATE",
     iterations: int = 1,
+    align_top_layer: bool = False,
 ) -> None:
     """
     Assign y-coordinates using the Brandes-Köpf algorithm.
@@ -443,6 +499,7 @@ def bk_assign_y_coords(
         direction: Layout direction (BALANCED uses all 4, others use specific)
         socket_alignment: How to align sockets (NONE, MODERATE, FULL)
         iterations: Number of refinement iterations for frame gap detection
+        align_top_layer: If True, align first and last rank at Y=0, push others below
     """
     columns = G.graph["columns"]
     for col in columns:
@@ -515,3 +572,7 @@ def bk_assign_y_coords(
         idx = _DIRECTION_TO_IDX[direction]
         for v, y in zip(G, layouts[idx]):
             v.y = y
+
+    # Apply top layer alignment if requested
+    if align_top_layer:
+        _apply_top_layer_alignment(G, columns)

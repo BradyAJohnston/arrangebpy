@@ -120,6 +120,7 @@ def orthogonal_layout(
             direction=settings.direction,
             socket_alignment=settings.socket_alignment,
             iterations=settings.iterations,
+            align_top_layer=settings.align_top_layer,
         )
     else:
         cluster_graph.add_vertical_border_nodes()
@@ -129,6 +130,7 @@ def orthogonal_layout(
             direction=settings.direction,
             socket_alignment=settings.socket_alignment,
             iterations=settings.iterations,
+            align_top_layer=settings.align_top_layer,
         )
         cluster_graph.remove_nodes_from(
             [vertex for vertex in graph if vertex.type == GType.VERTICAL_BORDER]

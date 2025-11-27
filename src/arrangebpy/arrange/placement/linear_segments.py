@@ -359,6 +359,7 @@ def linear_segments_assign_y_coords(
     direction: str = "BALANCED",
     socket_alignment: str = "MODERATE",
     iterations: int = 1,
+    align_top_layer: bool = False,
 ) -> None:
     """
     Assign y-coordinates using linear segments for complex frame hierarchies.
@@ -369,6 +370,7 @@ def linear_segments_assign_y_coords(
         direction: Layout direction (currently uses BALANCED)
         socket_alignment: Socket alignment mode (currently simplified)
         iterations: Iteration count (reserved for future use)
+        align_top_layer: If True, align first and last rank at Y=0
 
     Note: This is a simplified version. Full socket alignment and direction
     support would require more complex implementation.
@@ -377,4 +379,9 @@ def linear_segments_assign_y_coords(
     sort_linear_segments(linear_segments, CG.G.graph["columns"])
 
     create_unbalanced_placement(linear_segments, vertical_spacing)
+
+    # Apply top layer alignment if requested
+    if align_top_layer:
+        from .bk import _apply_top_layer_alignment
+        _apply_top_layer_alignment(CG.G, CG.G.graph["columns"])
     balance_placement(CG.G, linear_segments, vertical_spacing)

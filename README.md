@@ -89,7 +89,16 @@ from arrangebpy import layout, LayoutSettings
 layout(ntree, algorithm="sugiyama", settings=LayoutSettings(
     direction="BALANCED",
     socket_alignment="FULL",
-    stack_collapsed=True  # Stack collapsed math nodes
+    stack_collapsed=True,  # Stack collapsed math nodes
+    align_top_layer=True   # Align input/output at top
+))
+```
+
+**Special Feature - Flat Top Layout**:
+```python
+# Align source and sink nodes (input/output) at Y=0, push others below
+layout(ntree, algorithm="sugiyama", settings=LayoutSettings(
+    align_top_layer=True  # Clean flat top with I/O aligned
 ))
 ```
 
