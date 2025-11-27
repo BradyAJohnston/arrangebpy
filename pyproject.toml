@@ -30,7 +30,17 @@ Repository = "https://github.com/BradyAJohnston/arrangebpy"
 [tool.uv]
 dev-dependencies = []
 
+[tool.uv.workspace]
+members = [
+    ".",
+]
+
+[tool.uv.sources]
+arrangebpy = { workspace = true }
+
 [dependency-groups]
 dev = [
+    "arrangebpy",
+    "fake-bpy-module>=20251003",
     "pytest>=8.4.2",
 ]

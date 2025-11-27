@@ -36,6 +36,8 @@ test = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "arrangebpy" },
+    { name = "fake-bpy-module" },
     { name = "pytest" },
 ]
 
@@ -53,7 +55,11 @@ requires-dist = [
 provides-extras = ["bpy", "test", "docs"]
 
 [package.metadata.requires-dev]
-dev = [{ name = "pytest", specifier = ">=8.4.2" }]
+dev = [
+    { name = "arrangebpy", virtual = "." },
+    { name = "fake-bpy-module", specifier = ">=20251003" },
+    { name = "pytest", specifier = ">=8.4.2" },
+]
 
 [[package]]
 name = "attrs"
@@ -238,6 +244,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/96/8e/709914eb2b5749865801041647dc7f4e6d00b549cfe88b65ca192995f07c/distlib-0.4.0.tar.gz", hash = "sha256:feec40075be03a04501a973d81f633735b4b69f98b05450592310c0f401a4e0d", size = 614605, upload-time = "2025-07-17T16:52:00.465Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl", hash = "sha256:9659f7d87e46584a30b5780e43ac7a2143098441670ff0a49d5f9034c54a6c16", size = 469047, upload-time = "2025-07-17T16:51:58.613Z" },
+]
+
+[[package]]
+name = "fake-bpy-module"
+version = "20251003"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/3a/d7/8e34a795715d18497a257929ace8776a94d6c2c744e36b61e75567cbda64/fake_bpy_module-20251003.tar.gz", hash = "sha256:43d7fd082efc34497e238de3ad4d31fb850f2d1a8bb07418ae36eae56c1c7434", size = 973644, upload-time = "2025-10-03T06:19:57.638Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c6/24/d318f51ae1ebe953038984ed26fa0f9cd5466ef83da30c317282645695ec/fake_bpy_module-20251003-py3-none-any.whl", hash = "sha256:424f75fee6f300fc6d8e0d39abb28dbccd8777f611afa47ecdb9a03c00f2f43f", size = 1103011, upload-time = "2025-10-03T06:19:55.524Z" },
 ]
 
 [[package]]
