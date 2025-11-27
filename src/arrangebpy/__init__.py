@@ -1,7 +1,9 @@
 """Node Arrange - Automatic layout of nodes for Blender node trees."""
 
 # SPDX-License-Identifier: GPL-2.0-or-later
-from .arrange import graph, ordering, ranking, structs, sugiyama
+from . import arrange
+from . import utils
+from .arrange.sugiyama import sugiyama_layout
 from . import config, utils
 from .settings import LayoutSettings
 
@@ -9,10 +11,7 @@ __all__ = [
     "config",
     "graph",
     "LayoutSettings",
-    "ordering",
-    "ranking",
-    "structs",
-    "sugiyama",
+    "sugiyama_layout",
     "utils",
 ]
 

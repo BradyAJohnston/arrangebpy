@@ -9,12 +9,12 @@ jobs:
       runs-on: ubuntu-latest
       environment:
         name: pypi
-        url: https://pypi.org/p/bpynodearrange
+        url: https://pypi.org/p/arrangebpy
       permissions:
         id-token: write
       steps:
         - name: Checkout
-          uses: actions/checkout@v4
+          uses: actions/checkout@v5
         - name: Set up Python
           uses: actions/setup-python@v5
           with:

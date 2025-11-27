@@ -1,6 +1,6 @@
-# Comparison: node-arrange vs bpynodearrange
+# Comparison: node-arrange vs arrangebpy
 
-This document outlines the key differences between the original `node-arrange` Blender add-on and the `bpynodearrange` Python module.
+This document outlines the key differences between the original `node-arrange` Blender add-on and the `arrangebpy` Python module.
 
 ## Architecture Differences
 
@@ -23,14 +23,14 @@ source/
     ├── ordering.py
     ├── x_coords.py
     ├── y_coords.py
-    ├── stacking.py  ← Not in bpynodearrange
+    ├── stacking.py  ← Not in arrangebpy
     ├── realize.py
     └── structs.py
 ```
 
-**bpynodearrange (module)**:
+**arrangebpy (module)**:
 ```
-bpynodearrange/
+arrangebpy/
 ├── __init__.py (clean module exports)
 ├── config.py (simplified, no settings)
 ├── utils.py
@@ -49,7 +49,7 @@ bpynodearrange/
     └── structs.py
 ```
 
-## Missing Features in bpynodearrange
+## Missing Features in arrangebpy
 
 ### 1. **Node Stacking** ❌
 The original has a sophisticated feature to stack collapsed math nodes on top of each other (`stacking.py`):
@@ -57,12 +57,12 @@ The original has a sophisticated feature to stack collapsed math nodes on top of
 - Uses bipartite matching to create optimal stacking groups
 - Configurable vertical spacing between stacked nodes (`stack_margin_y_fac`)
 
-**Impact**: bpynodearrange cannot stack collapsed math nodes.
+**Impact**: arrangebpy cannot stack collapsed math nodes.
 
 ### 2. **User-Configurable Settings** ❌
 The original has extensive user settings via `properties.py`:
 
-| Setting | Original | bpynodearrange |
+| Setting | Original | arrangebpy |
 |---------|----------|----------------|
 | **Spacing (margin)** | User-configurable XY | Hardcoded params (50, 25) |
 | **Direction** | 5 options (LEFT_UP, RIGHT_UP, LEFT_DOWN, RIGHT_DOWN, BALANCED) | Always BALANCED |
@@ -79,7 +79,7 @@ The original provides multiple Blender operators:
 - `NA_OT_RecenterSelected` - Recenter selected nodes (3 origin modes)
 - `NA_OT_BatchRecenter` - Recenter all node trees
 
-**bpynodearrange** only provides the core `sugiyama_layout()` function.
+**arrangebpy** only provides the core `sugiyama_layout()` function.
 
 ### 4. **Keymaps and UI** ❌
 - No keyboard shortcuts
@@ -130,7 +130,7 @@ def bk_assign_y_coords(G, T):
             v.y = y
 ```
 
-**bpynodearrange (`placement/bk.py`)**:
+**arrangebpy (`placement/bk.py`)**:
 ```python
 def bk_assign_y_coords(G, vertical_spacing=50.0):
     # 4 layouts (same directions)
@@ -154,7 +154,7 @@ def bk_assign_y_coords(G, vertical_spacing=50.0):
 ```
 
 **Key differences**:
-1. **No iterative refinement** - bpynodearrange does single pass, original can iterate up to 20 times
+1. **No iterative refinement** - arrangebpy does single pass, original can iterate up to 20 times
 2. **No `inner_shift`** - Socket alignment is simplified
 3. **No `marked_nodes`** - Frame gap detection removed
 4. **Always balanced** - No direction selection
@@ -183,11 +183,11 @@ def should_use_inner_shift(v, w, is_right):
     return abs(v.height - w.height) > fmean((v.height, w.height)) / 2
 ```
 
-**bpynodearrange**: Uses simplified cell-based separation without socket-level alignment.
+**arrangebpy**: Uses simplified cell-based separation without socket-level alignment.
 
 ## Naming Differences
 
-| Original | bpynodearrange |
+| Original | arrangebpy |
 |----------|----------------|
 | `Node` | `GNode` (Graph Node) |
 | `Kind` | `GType` (Graph Type) |
@@ -197,7 +197,7 @@ def should_use_inner_shift(v, w, is_right):
 | `x_coords.py` + routing | `coordinates.py` + `routing.py` |
 | `realize.py` | `coordinates.py` + `reroute.py` + `multi_input.py` |
 
-## Advantages of bpynodearrange
+## Advantages of arrangebpy
 
 ### 1. **Cleaner Module Structure**
 - Better code organization with `placement/` subdirectory
@@ -206,7 +206,7 @@ def should_use_inner_shift(v, w, is_right):
 
 ### 2. **Simplified API**
 ```python
-from bpynodearrange.arrange.sugiyama import sugiyama_layout
+from arrangebpy.arrange.sugiyama import sugiyama_layout
 
 # Simple to use in other add-ons
 sugiyama_layout(
@@ -257,7 +257,7 @@ sugiyama_layout(
 
 ## Recommendations
 
-### For bpynodearrange to reach feature parity:
+### For arrangebpy to reach feature parity:
 
 1. **Add optional settings parameter**:
    ```python
@@ -290,7 +290,7 @@ sugiyama_layout(
 - You want batch operations
 - You prefer specific layout directions
 
-**Use bpynodearrange when**:
+**Use arrangebpy when**:
 - You're building another add-on
 - You need programmatic control
 - Simpler API is preferred
@@ -299,6 +299,6 @@ sugiyama_layout(
 
 ## Conclusion
 
-**bpynodearrange** is a cleaner, more modular reimplementation optimized for use as a library. It sacrifices some advanced features (stacking, socket alignment modes, iterative refinement) for simplicity and better code organization.
+**arrangebpy** is a cleaner, more modular reimplementation optimized for use as a library. It sacrifices some advanced features (stacking, socket alignment modes, iterative refinement) for simplicity and better code organization.
 
 The core Sugiyama algorithm is implemented in both, but the original has more sophisticated refinements for edge cases, especially around node frames and socket alignment.

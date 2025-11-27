@@ -1,11 +1,11 @@
-# bpynodearrange Usage Examples
+# arrangebpy Usage Examples
 
-This document shows how to use the new features added to bpynodearrange.
+This document shows how to use the new features added to arrangebpy.
 
 ## Basic Usage (Backwards Compatible)
 
 ```python
-from bpynodearrange.arrange.sugiyama import sugiyama_layout
+from arrangebpy.arrange.sugiyama import sugiyama_layout
 
 # Simple usage with defaults
 sugiyama_layout(ntree)
@@ -17,8 +17,8 @@ sugiyama_layout(ntree, vertical_spacing=30.0, horizontal_spacing=60.0)
 ## Using LayoutSettings for Full Control
 
 ```python
-from bpynodearrange import LayoutSettings
-from bpynodearrange.arrange.sugiyama import sugiyama_layout
+from arrangebpy import LayoutSettings
+from arrangebpy.arrange.sugiyama import sugiyama_layout
 
 # Create custom settings
 settings = LayoutSettings(
@@ -133,8 +133,8 @@ sugiyama_layout(ntree, settings)
 ## Complete Example for Shader Node Trees
 
 ```python
-from bpynodearrange import LayoutSettings
-from bpynodearrange.arrange.sugiyama import sugiyama_layout
+from arrangebpy import LayoutSettings
+from arrangebpy.arrange.sugiyama import sugiyama_layout
 
 # Optimized settings for shader node trees
 shader_settings = LayoutSettings(
@@ -200,8 +200,8 @@ sugiyama_layout(geometry_nodes.node_tree, geometry_settings)
 # In your Blender add-on operator
 
 import bpy
-from bpynodearrange import LayoutSettings
-from bpynodearrange.arrange.sugiyama import sugiyama_layout
+from arrangebpy import LayoutSettings
+from arrangebpy.arrange.sugiyama import sugiyama_layout
 
 class MY_OT_ArrangeNodes(bpy.types.Operator):
     bl_idname = "node.my_arrange"

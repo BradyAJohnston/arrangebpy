@@ -1,8 +1,8 @@
-# Implementation Summary: Feature-Complete bpynodearrange
+# Implementation Summary: Feature-Complete arrangebpy
 
 ## Overview
 
-Successfully implemented **all missing features** from the original node-arrange add-on into bpynodearrange, with a **clean, library-focused API** design.
+Successfully implemented **all missing features** from the original node-arrange add-on into arrangebpy, with a **clean, library-focused API** design.
 
 ## What Was Implemented
 
@@ -289,8 +289,8 @@ sugiyama_layout(geo_tree, settings)
 ## Files Created/Modified
 
 ### New Files
-- `src/bpynodearrange/settings.py` - LayoutSettings dataclass
-- `src/bpynodearrange/arrange/stacking.py` - Node stacking (314 lines)
+- `src/arrangebpy/settings.py` - LayoutSettings dataclass
+- `src/arrangebpy/arrange/stacking.py` - Node stacking (314 lines)
 - `USAGE_EXAMPLES.md` - Comprehensive examples
 - `CHANGELOG.md` - Detailed changelog
 - `COMPARISON.md` - Feature comparison
@@ -298,19 +298,19 @@ sugiyama_layout(geo_tree, settings)
 - `README.md` - Updated with clean API
 
 ### Modified Files
-- `src/bpynodearrange/__init__.py` - Export LayoutSettings
-- `src/bpynodearrange/arrange/sugiyama.py` - Clean signature, full integration
-- `src/bpynodearrange/arrange/placement/bk.py` - All features added
-- `src/bpynodearrange/arrange/placement/linear_segments.py` - Parameter support
-- `src/bpynodearrange/arrange/ordering.py` - Configurable sweeps
-- `src/bpynodearrange/arrange/coordinates.py` - Better names
-- `src/bpynodearrange/arrange/graph.py` - Added inner_shift, node_name
-- `src/bpynodearrange/utils.py` - Added get_ntree(), improved safety
+- `src/arrangebpy/__init__.py` - Export LayoutSettings
+- `src/arrangebpy/arrange/sugiyama.py` - Clean signature, full integration
+- `src/arrangebpy/arrange/placement/bk.py` - All features added
+- `src/arrangebpy/arrange/placement/linear_segments.py` - Parameter support
+- `src/arrangebpy/arrange/ordering.py` - Configurable sweeps
+- `src/arrangebpy/arrange/coordinates.py` - Better names
+- `src/arrangebpy/arrange/graph.py` - Added inner_shift, node_name
+- `src/arrangebpy/utils.py` - Added get_ntree(), improved safety
 - `tests/test_sugiyama.py` - Updated to clean API
 
 ## Feature Comparison
 
-| Feature | Original | bpynodearrange |
+| Feature | Original | arrangebpy |
 |---------|----------|----------------|
 | Node stacking | ✅ | ✅ |
 | Layout direction | ✅ (5 modes) | ✅ (5 modes) |
@@ -363,7 +363,7 @@ These could be added later if needed:
 
 ✨ **Feature parity achieved!**
 
-All major features from node-arrange are now in bpynodearrange, with a **significantly cleaner API** design focused on library use. The implementation is:
+All major features from node-arrange are now in arrangebpy, with a **significantly cleaner API** design focused on library use. The implementation is:
 
 - ✅ **Complete** - All features implemented
 - ✅ **Clean** - No backwards compatibility baggage

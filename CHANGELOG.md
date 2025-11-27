@@ -4,7 +4,7 @@
 
 ### Added - Feature Parity with node-arrange!
 
-All major features from the original node-arrange add-on have been ported to bpynodearrange:
+All major features from the original node-arrange add-on have been ported to `arrangebpy`:
 
 #### Settings System
 - **`LayoutSettings` dataclass**: Centralized configuration for all layout parameters
@@ -96,7 +96,7 @@ All major features from the original node-arrange add-on have been ported to bpy
 sugiyama_layout(ntree)
 
 # With settings
-from bpynodearrange import LayoutSettings
+from arrangebpy import LayoutSettings
 
 settings = LayoutSettings(
     direction="BALANCED",

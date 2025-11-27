@@ -4,8 +4,8 @@ import pytest
 import bpy
 from mathutils import Vector
 
-from bpynodearrange.arrange.sugiyama import sugiyama_layout, precompute_links
-from bpynodearrange import config, LayoutSettings
+from arrangebpy.arrange.sugiyama import sugiyama_layout, precompute_links
+from arrangebpy import config, LayoutSettings
 
 
 class TestSugiyamaLayout:

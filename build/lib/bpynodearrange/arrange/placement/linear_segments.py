@@ -176,10 +176,26 @@ def create_unbalanced_placement(
 ) -> None:
     heights = {s: max([v.height for v in s]) for s in linear_segments}
     for segment in linear_segments:
-        values = [
-            w.y - heights[w.segment] for v in segment for w in v.col if w.y is not None
-        ]
-        lowest_y = min(values, default=0) - vertical_spacing
+        # Find the bottom of the immediately preceding segment in the same column
+        preceding_bottom = None
+        for v in segment:
+            # Look for already-placed nodes in the same column that are above this segment
+            col_nodes_above = [
+                w for w in v.col if w.y is not None and w.segment != segment
+            ]
+            if col_nodes_above:
+                # Find the lowest (most negative) Y position of nodes above
+                preceding_bottom = min(
+                    w.y - heights[w.segment] for w in col_nodes_above
+                )
+                break
+
+        # Position this segment below the preceding one with proper spacing
+        if preceding_bottom is not None:
+            lowest_y = preceding_bottom - vertical_spacing
+        else:
+            lowest_y = 0  # First segment starts at 0
+
         for v in segment:
             v.y = lowest_y
 
@@ -337,8 +353,26 @@ def balance_placement(
 
 
 def linear_segments_assign_y_coords(
-    CG: ClusterGraph, vertical_spacing: float = 50.0
+    CG: ClusterGraph,
+    *,
+    vertical_spacing: float = 25.0,
+    direction: str = "BALANCED",
+    socket_alignment: str = "MODERATE",
+    iterations: int = 1,
 ) -> None:
+    """
+    Assign y-coordinates using linear segments for complex frame hierarchies.
+
+    Args:
+        CG: The cluster graph
+        vertical_spacing: Vertical spacing between nodes
+        direction: Layout direction (currently uses BALANCED)
+        socket_alignment: Socket alignment mode (currently simplified)
+        iterations: Iteration count (reserved for future use)
+
+    Note: This is a simplified version. Full socket alignment and direction
+    support would require more complex implementation.
+    """
     linear_segments = get_linear_segments(CG)
     sort_linear_segments(linear_segments, CG.G.graph["columns"])
 

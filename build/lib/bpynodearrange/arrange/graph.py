@@ -56,6 +56,11 @@ def is_real(v: GNode | Cluster) -> TypeGuard[_RealGNode]:
     return isinstance(v.node, Node)
 
 
+def node_name(v: GNode) -> str:
+    """Get the name of a node, or empty string if not a real node."""
+    return getattr(v.node, "name", "")
+
+
 class GNode:
     """Simplified graph node with essential attributes only."""
 
@@ -109,12 +114,15 @@ class GNode:
         self.root = self
         self.aligned = self
         self.cells = None
+        self.inner_shift = 0.0
         self.sink = self
         self.shift = inf
         self.y = None  # This will be set during layout
 
     def corrected_y(self) -> float:
         """Get y-coordinate corrected for Blender's coordinate system."""
+        if self.y is None:
+            return 0.0
         if not is_real(self):
             return self.y
         return self.y + (abs_loc(self.node).y - get_top(self.node))

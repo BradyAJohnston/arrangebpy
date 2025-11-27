@@ -1,4 +1,4 @@
-# bpynodearrange
+# arrangebpy
 
 **Automatic layout of nodes for Blender node trees** - A clean, library-focused Python module implementing the Sugiyama hierarchical graph layout algorithm.
 
@@ -28,19 +28,19 @@ Ported from the excellent [node-arrange](https://github.com/JacquesLucke/node_ar
 ## Installation
 
 ```bash
-pip install bpynodearrange
+pip install arrangebpy
 ```
 
 Or with uv:
 ```bash
-uv add bpynodearrange
+uv add arrangebpy
 ```
 
 ## Quick Start
 
 ```python
-from bpynodearrange import LayoutSettings
-from bpynodearrange.arrange.sugiyama import sugiyama_layout
+from arrangebpy import LayoutSettings
+from arrangebpy.arrange.sugiyama import sugiyama_layout
 
 # Simple usage with defaults
 sugiyama_layout(node_tree)
@@ -60,7 +60,7 @@ sugiyama_layout(node_tree, settings)
 ### Default Layout
 
 ```python
-from bpynodearrange.arrange.sugiyama import sugiyama_layout
+from arrangebpy.arrange.sugiyama import sugiyama_layout
 
 # Uses sensible defaults
 sugiyama_layout(material.node_tree)
@@ -69,8 +69,8 @@ sugiyama_layout(material.node_tree)
 ### Shader Node Trees (with stacking)
 
 ```python
-from bpynodearrange import LayoutSettings
-from bpynodearrange.arrange.sugiyama import sugiyama_layout
+from arrangebpy import LayoutSettings
+from arrangebpy.arrange.sugiyama import sugiyama_layout
 
 settings = LayoutSettings(
     # Stack collapsed math nodes
@@ -118,7 +118,7 @@ sugiyama_layout(geometry_node_tree, settings)
 All configuration through the `LayoutSettings` dataclass:
 
 ```python
-from bpynodearrange import LayoutSettings
+from arrangebpy import LayoutSettings
 
 settings = LayoutSettings(
     # Spacing
@@ -156,8 +156,8 @@ settings = LayoutSettings(
 
 ```python
 import bpy
-from bpynodearrange import LayoutSettings
-from bpynodearrange.arrange.sugiyama import sugiyama_layout
+from arrangebpy import LayoutSettings
+from arrangebpy.arrange.sugiyama import sugiyama_layout
 
 class MY_OT_ArrangeNodes(bpy.types.Operator):
     bl_idname = "node.my_arrange"
@@ -193,7 +193,7 @@ Implements the Sugiyama hierarchical graph layout framework:
 ## Architecture
 
 ```
-bpynodearrange/
+arrangebpy/
 ├── settings.py              # Configuration
 ├── arrange/
 │   ├── sugiyama.py         # Main orchestration
@@ -213,8 +213,8 @@ bpynodearrange/
 ## Development
 
 ```bash
-git clone https://github.com/BradyAJohnston/bpynodearrange.git
-cd bpynodearrange
+git clone https://github.com/BradyAJohnston/arrangebpy.git
+cd arrangebpy
 
 # Install
 uv sync
