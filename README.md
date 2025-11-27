@@ -1,10 +1,16 @@
 # arrangebpy
 
-**Automatic layout of nodes for Blender node trees** - A clean, library-focused Python module implementing the Sugiyama hierarchical graph layout algorithm.
+**Automatic layout of nodes for Blender node trees** - A clean, library-focused Python module implementing multiple graph layout algorithms.
 
 Ported from the excellent [node-arrange](https://github.com/JacquesLucke/node_arrange) Blender add-on, redesigned as a standalone module for use in other add-ons and tools.
 
 ## Features
+
+🎨 **Multiple Layout Algorithms**
+- **Sugiyama**: Hierarchical layout with minimal edge crossings (default)
+- **Topological**: Fast layered layout for quick results
+- **Grid**: Regular grid arrangement, great for organization
+- **Orthogonal**: Clean orthogonal edge routing for presentations
 
 ✨ **Complete Sugiyama Implementation**
 - Hierarchical node layout with minimal edge crossings
@@ -20,6 +26,7 @@ Ported from the excellent [node-arrange](https://github.com/JacquesLucke/node_ar
 - **Adjustable spacing**: Control horizontal and vertical spacing
 
 🔧 **Clean API Design**
+- Unified `layout()` function for all algorithms
 - Settings-based configuration (no global state)
 - Type-safe with full type hints
 - Well-documented with examples
@@ -39,31 +46,115 @@ uv add arrangebpy
 ## Quick Start
 
 ```python
-from arrangebpy import LayoutSettings
-from arrangebpy.arrange.sugiyama import sugiyama_layout
+from arrangebpy import layout, LayoutSettings
 
-# Simple usage with defaults
-sugiyama_layout(node_tree)
+# Simple usage with defaults (uses Sugiyama)
+layout(node_tree)
+
+# Choose a specific algorithm
+layout(node_tree, algorithm="topological")  # Fast layout
+layout(node_tree, algorithm="grid")         # Grid layout
+layout(node_tree, algorithm="orthogonal")   # Orthogonal edges
 
 # Custom settings
+from arrangebpy import LayoutSettings
 settings = LayoutSettings(
     direction="BALANCED",
     socket_alignment="MODERATE",
     horizontal_spacing=60.0,
     vertical_spacing=30.0,
 )
-sugiyama_layout(node_tree, settings)
+layout(node_tree, algorithm="sugiyama", settings=settings)
 ```
+
+### Legacy API (Still Supported)
+
+```python
+from arrangebpy import sugiyama_layout, LayoutSettings
+
+# Direct function calls still work
+sugiyama_layout(node_tree)
+sugiyama_layout(node_tree, LayoutSettings(horizontal_spacing=60.0))
+```
+
+## Layout Algorithms
+
+### Sugiyama (Hierarchical)
+
+Best for most node trees. Creates a hierarchical left-to-right layout with minimal edge crossings.
+
+```python
+from arrangebpy import layout, LayoutSettings
+
+layout(ntree, algorithm="sugiyama", settings=LayoutSettings(
+    direction="BALANCED",
+    socket_alignment="FULL",
+    stack_collapsed=True  # Stack collapsed math nodes
+))
+```
+
+**Use when**: You want the highest quality layout with minimal crossings (shader trees, geometry nodes, etc.)
+
+### Topological (Fast Layered)
+
+Quick and simple layered layout without crossing reduction. Much faster than Sugiyama.
+
+```python
+from arrangebpy import layout, TopologicalSettings
+
+layout(ntree, algorithm="topological", settings=TopologicalSettings(
+    horizontal_spacing=60.0,
+    sort_by_degree=True  # Sort nodes by connection count
+))
+
+# For perfectly flat horizontal layouts (all nodes at Y=0)
+layout(ntree, algorithm="topological", settings=TopologicalSettings(
+    flatten=True  # Perfect for simple linear chains
+))
+```
+
+**Use when**: You need quick layouts during development, have very large graphs, or want a perfectly flat horizontal layout.
+
+### Grid
+
+Arranges nodes in a regular grid pattern, optionally grouping by type or cluster.
+
+```python
+from arrangebpy import layout, GridSettings
+
+layout(ntree, algorithm="grid", settings=GridSettings(
+    columns=5,
+    grouping="TYPE",  # Group by node type
+    cell_width=250.0
+))
+```
+
+**Use when**: You want to organize collections of nodes or create inventory-style layouts.
+
+### Orthogonal (Clean Edges)
+
+Uses Sugiyama for node placement but routes edges with only horizontal/vertical segments.
+
+```python
+from arrangebpy import layout, OrthogonalSettings
+
+layout(ntree, algorithm="orthogonal", settings=OrthogonalSettings(
+    horizontal_spacing=80.0,  # More space for routing
+    socket_alignment="FULL"
+))
+```
+
+**Use when**: You need professional-looking layouts for presentations or documentation.
 
 ## Usage Examples
 
-### Default Layout
+### Default Layout (Sugiyama)
 
 ```python
-from arrangebpy.arrange.sugiyama import sugiyama_layout
+from arrangebpy import layout
 
 # Uses sensible defaults
-sugiyama_layout(material.node_tree)
+layout(material.node_tree)
 ```
 
 ### Shader Node Trees (with stacking)
