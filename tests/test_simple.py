@@ -29,11 +29,14 @@ def test_simple_line():
         tree.links.new(previous.outputs[0], node.inputs[0])
         previous = node
 
-    # Use topological layout with flatten mode for perfectly horizontal layout
+    # Use Sugiyama layout with flat top and generous spacing
     ar.layout(
         ntree=tree,
         algorithm="sugiyama",
-        settings=ar.LayoutSettings(align_top_layer=True),
+        settings=ar.LayoutSettings(
+            align_top_layer=True,
+            horizontal_spacing=200.0,  # Generous spacing for geometry nodes
+        ),
     )
     bpy.ops.wm.save_mainfile(filepath="/Users/brady/Desktop/simplearrange.blend")
 

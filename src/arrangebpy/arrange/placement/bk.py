@@ -425,10 +425,12 @@ def _apply_top_layer_alignment(
     G: nx.MultiDiGraph[GNode], columns: list[list[GNode]]
 ) -> None:
     """
-    Align the first and last rank at Y=0, push all other ranks below.
+    Align the topmost node in each column at Y=0, creating a flat top layer.
 
-    This creates a "flat top" layout where input and output nodes are
-    aligned horizontally at the top, with intermediate nodes below.
+    This identifies the "top branch" by taking the node with maximum Y coordinate
+    in each column (rank), which represents the topmost visual position after
+    the BK algorithm. All top-branch nodes are aligned to Y=0, and other nodes
+    are positioned below.
 
     Args:
         G: The graph with assigned Y coordinates
@@ -440,24 +442,18 @@ def _apply_top_layer_alignment(
     # Filter out dummy/reroute nodes - only consider real nodes
     from ..graph import GType
 
-    # Find source and sink nodes (those with no predecessors/successors)
-    sources = []
-    sinks = []
+    top_nodes = []
 
-    for node in G:
-        if node.type != GType.NODE:
+    # For each column, find the node with the maximum Y coordinate
+    # This represents the topmost node in that column
+    for column in columns:
+        real_nodes = [node for node in column if node.type == GType.NODE]
+        if not real_nodes:
             continue
-        # Count real predecessors/successors (not dummies/reroutes)
-        real_preds = [p for p in G.predecessors(node) if p.type == GType.NODE]
-        real_succs = [s for s in G.successors(node) if s.type == GType.NODE]
 
-        if not real_preds:
-            sources.append(node)
-        if not real_succs:
-            sinks.append(node)
-
-    # Get all nodes that should be at the top (sources and sinks)
-    top_nodes = set(sources) | set(sinks)
+        # Find the node with maximum Y (topmost position)
+        top_node_in_column = max(real_nodes, key=lambda n: n.y)
+        top_nodes.append(top_node_in_column)
 
     if not top_nodes:
         return
@@ -470,8 +466,9 @@ def _apply_top_layer_alignment(
         node.y = 0
 
     # Push all other nodes down by max_top_y (so they're below 0)
+    top_nodes_set = set(top_nodes)
     for node in G:
-        if node.type == GType.NODE and node not in top_nodes:
+        if node.type == GType.NODE and node not in top_nodes_set:
             # Move this node down relative to the top
             node.y -= max_top_y
 
