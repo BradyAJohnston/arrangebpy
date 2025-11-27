@@ -421,16 +421,47 @@ _DIRECTION_TO_IDX: dict[Direction, int] = {
 }
 
 
+def _has_geometry_socket(node: GNode) -> bool:
+    """
+    Check if a node has any geometry input or output sockets.
+
+    Only nodes that process geometry (have geometry sockets) should be
+    considered for top layer alignment. Nodes that only provide data
+    (colors, attributes, etc.) should remain below the main flow.
+
+    Args:
+        node: The graph node to check
+
+    Returns:
+        True if the node has any geometry sockets, False otherwise
+    """
+    from ..graph import GType
+
+    if node.type != GType.NODE or node.node is None:
+        return False
+
+    # Check all input and output sockets for geometry type
+    for socket in node.node.inputs:
+        if "Geometry" in socket.bl_idname:
+            return True
+
+    for socket in node.node.outputs:
+        if "Geometry" in socket.bl_idname:
+            return True
+
+    return False
+
+
 def _apply_top_layer_alignment(
     G: nx.MultiDiGraph[GNode], columns: list[list[GNode]]
 ) -> None:
     """
-    Align the topmost node in each column at Y=0, creating a flat top layer.
+    Align the topmost geometry-processing node in each column at Y=0.
 
-    This identifies the "top branch" by taking the node with maximum Y coordinate
-    in each column (rank), which represents the topmost visual position after
-    the BK algorithm. All top-branch nodes are aligned to Y=0, and other nodes
-    are positioned below.
+    This identifies the "top branch" of the main geometry processing pipeline
+    by taking the node with maximum Y coordinate in each column that has
+    geometry sockets. Nodes without geometry sockets (like color/attribute
+    providers) are excluded from top layer alignment and remain below.
 
     Args:
         G: The graph with assigned Y coordinates
@@ -444,15 +475,18 @@ def _apply_top_layer_alignment(
 
     top_nodes = []
 
-    # For each column, find the node with the maximum Y coordinate
-    # This represents the topmost node in that column
+    # For each column, find the topmost node with geometry sockets
     for column in columns:
-        real_nodes = [node for node in column if node.type == GType.NODE]
-        if not real_nodes:
+        # Only consider real nodes with geometry sockets
+        geometry_nodes = [
+            node for node in column
+            if node.type == GType.NODE and _has_geometry_socket(node)
+        ]
+        if not geometry_nodes:
             continue
 
         # Find the node with maximum Y (topmost position)
-        top_node_in_column = max(real_nodes, key=lambda n: n.y)
+        top_node_in_column = max(geometry_nodes, key=lambda n: n.y)
         top_nodes.append(top_node_in_column)
 
     if not top_nodes:

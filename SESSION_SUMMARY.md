@@ -257,27 +257,41 @@ After first fix, alignment was **less aligned** because only source nodes were a
 - Sink nodes (outputs)
 - **All nodes on the "top branch"** (e.g., Join Geometry and its top inputs)
 
-### Final Solution: Top Branch Detection
+### Issue #3: Non-Geometry Nodes Incorrectly Aligned
+Second attempt aligned topmost node in each column, but included **auxiliary nodes** like:
+- Color Common (provides colors)
+- Named Attribute (provides data)
 
-The correct approach is to align **the topmost node in each column** at Y=0.
+These nodes don't process geometry - they just provide data to the main flow.
+
+### Final Solution: Geometry-Socket-Based Top Branch Detection
+
+The correct approach is to align **the topmost geometry-processing node in each column** at Y=0.
 
 **Why this works**:
-- After BK algorithm assigns Y coordinates, the node with maximum Y in each column represents the "top branch"
-- This naturally includes sources, sinks, and intermediate nodes on the top path
-- Bottom branches remain below
+- Only nodes with geometry input/output sockets are considered
+- Auxiliary nodes (colors, attributes, math) are excluded
+- Creates a clean "main pipeline" at the top
+- Data provider nodes naturally fall below
 
 ### Implementation
-File: `src/arrangebpy/arrange/placement/bk.py:424-473`
+File: `src/arrangebpy/arrange/placement/bk.py:424-507`
 
-The function now:
-1. For each column (rank), finds the node with maximum Y coordinate
-2. Collects all these "top-of-column" nodes
-3. Aligns them all to Y=0
-4. Pushes remaining nodes down proportionally
+New helper function `_has_geometry_socket()`:
+- Checks if node has any input or output sockets with "Geometry" in `bl_idname`
+- Returns True only for geometry-processing nodes
+
+Modified `_apply_top_layer_alignment()`:
+1. For each column (rank), finds nodes with geometry sockets
+2. From those, selects the node with maximum Y coordinate
+3. Collects all these "top geometry nodes"
+4. Aligns them all to Y=0
+5. Pushes remaining nodes (including auxiliary nodes) down
 
 ### Test Results
 ✅ All 38 tests still passing
-✅ Creates proper "flat top" layout with bottom branches below
+✅ Creates proper "flat top" layout with geometry pipeline aligned
+✅ Auxiliary nodes (colors, attributes) positioned below
 
 ## Current State
 
