@@ -329,6 +329,6 @@ GPL-3.0-or-later
 
 ## Credits
 
-Based on [node-arrange](https://github.com/JacquesLucke/node_arrange) by Jacques Lucke.
+Based on [node-arrange](https://github.com/Leonardo-Pike-Excell/node-arrange) by Leonardo Pike-Excell
 
 Implements algorithms from Sugiyama et al., Brandes & Köpf, and others.
